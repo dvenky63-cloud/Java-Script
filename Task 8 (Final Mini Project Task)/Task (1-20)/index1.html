@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Part 1: Products API Tasks (1-20)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.5;
+    }
+    .task-section {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 25px;
+      border-radius: 6px;
+    }
+    .card {
+      border: 1px solid #ddd;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 4px;
+      background-color: #fafafa;
+    }
+    .task-13-img {
+      width: 200px;
+      display: block;
+      margin: 8px 0;
+    }
+    .task-image {
+      max-width: 120px;
+      display: block;
+      margin: 8px 0;
+    }
+    .api {
+      font-weight: bold;
+      padding: 10px;
+      background-color: #eef2ff;
+      border-left: 4px solid #4f46e5;
+      margin-top: 10px;
+    }
+    .status-text {
+      font-weight: bold;
+      padding: 10px;
+      background-color: #ecfdf5;
+      border-left: 4px solid #10b981;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="display-container"></div>
+
+  <!-- Sections 18, 19, and 20 structured inside the page flow -->
+  <div class="task-section">
+    <strong>Task 18 & 19: API Loading and Success Status inside .api</strong>
+    <p><em>(Shows "Loading..." first, then updates once data arrives)</em></p>
+    <div class="api"></div>
+  </div>
+
+  <div class="task-section">
+    <strong>Task 20: Finally Handler Status</strong>
+    <div id="finally-container" class="status-text">Waiting for request to complete...</div>
+  </div>
+
+  <script>
+    let apiContainer = document.querySelector('.api');
+    let displayContainer = document.getElementById('display-container');
+    let finallyContainer = document.getElementById('finally-container');
+
+    // Helper to create task containers
+    let renderTaskSection = function(title, innerContent) {
+      let section = document.createElement('div');
+      section.className = 'task-section';
+      let header = document.createElement('strong');
+      header.textContent = title;
+      section.appendChild(header);
+      section.appendChild(innerContent);
+      displayContainer.appendChild(section);
+    };
+
+    // 19. Display "Loading..." inside .api before fetching the API data
+    apiContainer.textContent = "Loading...";
+
+    fetch('https://fakestoreapi.com/products')
+      .then(function(response) {
+        return response.json();
+      })
+      // Small artificial delay so "Loading..." in Task 19 is visible before Task 18 replaces it
+      .then(function(products) {
+        return new Promise(function(resolve) {
+          setTimeout(function() {
+            resolve(products);
+          }, 1500);
+        });
+      })
+      .then(function(products) {
+        // 18. Display a message inside .api when the API data is successfully loaded
+        apiContainer.textContent = "API data successfully loaded!";
+
+        // --- Task 1: Display only the product title inside an <h1> tag ---
+        let task1Wrap = document.createElement('div');
+        for (let i = 0; i < products.length; i++) {
+          let h1 = document.createElement('h1');
+          h1.textContent = products[i].title;
+          task1Wrap.appendChild(h1);
+        }
+        renderTaskSection("Task 1: Title in <h1>", task1Wrap);
+
+        // --- Task 2: Display the product ID and title inside an <h2> tag ---
+        let task2Wrap = document.createElement('div');
+        for (let i = 0; i < products.length; i++) {
+          let h2 = document.createElement('h2');
+          h2.textContent = "ID: " + products[i].id + " - " + products[i].title;
+          task2Wrap.appendChild(h2);
+        }
+        renderTaskSection("Task 2: ID and Title in <h2>", task2Wrap);
+
+        // --- Task 3: Display the first 30 characters of each product title ---
+        let task3Wrap = document.createElement('div');
+        for (let i = 0; i < products.length; i++) {
+          let p = document.createElement('p');
+          p.textContent = products[i].title.substring(0, 30);
+          task3Wrap.appendChild(p);
+        }
+        renderTaskSection("Task 3: First 30 characters of Title", task3Wrap);
+
+        // --- Task 4: Display the first 100 characters of each product description ---
+        let task4Wrap = document.createElement('div');
+        for (let i = 0; i < products.length; i++) {
+          let p = document.createElement('p');
+          p.textContent = products[i].description.substring(0, 100);
+          task4Wrap.appendChild(p);
+        }
+        renderTaskSection("Task 4: First 100 characters of Description", task4Wrap);
+
+        // --- Task 5: Display each product's image inside a <div> ---
+        let task5Wrap = document.createElement('div');
+        for (let i = 0; i < products.length; i++) {
+          let div = document.createElement('div');
+          let img = document.createElement('img');
+          img.src = products[i].image;
+          img.alt = products[i].title;
+          img.className = 'task-image';
+          div.appendChild(img);
+          task5Wrap.appendChild(div);
+        }
+        renderTaskSection("Task 5: Image inside <div>", task5Wrap);
+
+        // --- Task 6: Display the product title, description, and image inside a single <div> ---
+        let task6Wrap = document.createElement('div');
+        for (let i = 0; i < products.length; i++) {
+          let div = document.createElement('div');
+          let title = document.createElement('h4');
+          title.textContent = products[i].title;
+          let desc = document.createElement('p');
+          desc.textContent = products[i].description;
+          let img = document.createElement('img');
+          img.src = products[i].image;
+          img.alt = products[i].title;
+          img.className = 'task-image';
+
+          div.appendChild(title);
+          div.appendChild(desc);
+          div.appendChild(img);
+          task6Wrap.appendChild(div);
+        }
+        renderTaskSection("Task 6: Title, Description, Image in single <div>", task6Wrap);
+
+        // --- Task 7: Display each product's price inside a <p> tag ---
+        let task7Wrap = document.createElement('div');
+        for (let i = 0; i < products.length; i++) {
+          let p = document.createElement('p');
+          p.textContent = "$" + products[i].price;
+          task7Wrap.appendChild(p);
+        }
+        renderTaskSection("Task 7: Price inside <p>", task7Wrap);
+
+        // --- Task 8: Display each product's category inside an <h3> tag ---
+        let task8Wrap = document.createElement('div');
+        for (let i = 0; i < products.length; i++) {
+          let h3 = document.createElement('h3');
+          h3.textContent = products[i].category;
+          task8Wrap.appendChild(h3);
+        }
+        renderTaskSection("Task 8: Category inside <h3>", task8Wrap);
+
+        // --- Task 9: Display the product title in uppercase ---
+        let task9Wrap = document.createElement('div');
+        for (let i = 0; i < products.length; i++) {
+          let p = document.createElement('p');
+          p.textContent = products[i].title.toUpperCase();
+          task9Wrap.appendChild(p);
+        }
+        renderTaskSection("Task 9: Title in uppercase", task9Wrap);
+
+        // --- Task 10: Display the product title and its total character count ---
+        let task10Wrap = document.createElement('div');
+        for (let i = 0; i < products.length; i++) {
+          let p = document.createElement('p');
+          p.textContent = products[i].title + " (Characters: " + products[i].title.length + ")";
+          task10Wrap.appendChild(p);
+        }
+        renderTaskSection("Task 10: Title and Total Character Count", task10Wrap);
+
+        // --- Task 11: Display the first 5 products only ---
+        let task11Wrap = document.createElement('div');
+        for (let i = 0; i < Math.min(5, products.length); i++) {
+          let p = document.createElement('p');
+          p.textContent = (i + 1) + ". " + products[i].title;
+          task11Wrap.appendChild(p);
+        }
+        renderTaskSection("Task 11: First 5 Products Only", task11Wrap);
+
+        // --- Task 12: Display products with their IDs, titles, and prices ---
+        let task12Wrap = document.createElement('div');
+        for (let i = 0; i < products.length; i++) {
+          let p = document.createElement('p');
+          p.textContent = "ID: " + products[i].id + " | " + products[i].title + " - $" + products[i].price;
+          task12Wrap.appendChild(p);
+        }
+        renderTaskSection("Task 12: ID, Title, and Price", task12Wrap);
+
+        // --- Task 13: Display each product's image with a width of 200px ---
+        let task13Wrap = document.createElement('div');
+        for (let i = 0; i < products.length; i++) {
+          let img = document.createElement('img');
+          img.src = products[i].image;
+          img.alt = products[i].title;
+          img.className = 'task-13-img';
+          task13Wrap.appendChild(img);
+        }
+        renderTaskSection("Task 13: Image width 200px", task13Wrap);
+
+        // --- Task 14: Add a separate <div> for each product and give it a class name of "card" ---
+        let task14Wrap = document.createElement('div');
+        for (let i = 0; i < products.length; i++) {
+          let cardDiv = document.createElement('div');
+          cardDiv.className = 'card';
+          cardDiv.textContent = products[i].title;
+          task14Wrap.appendChild(cardDiv);
+        }
+        renderTaskSection("Task 14: Separate <div> with class='card'", task14Wrap);
+
+        // --- Task 15: Display the product title and description, limiting the description to 50 characters ---
+        let task15Wrap = document.createElement('div');
+        for (let i = 0; i < products.length; i++) {
+          let div = document.createElement('div');
+          let strong = document.createElement('strong');
+          strong.textContent = products[i].title;
+          let p = document.createElement('p');
+          p.textContent = products[i].description.substring(0, 50) + "...";
+          div.appendChild(strong);
+          div.appendChild(p);
+          task15Wrap.appendChild(div);
+        }
+        renderTaskSection("Task 15: Title and Description limited to 50 chars", task15Wrap);
+
+        // --- Task 16: Display all product titles in the browser console and on the webpage ---
+        let task16Wrap = document.createElement('div');
+        for (let i = 0; i < products.length; i++) {
+          console.log("Product " + products[i].id + ": " + products[i].title);
+          let p = document.createElement('p');
+          p.textContent = products[i].title;
+          task16Wrap.appendChild(p);
+        }
+        renderTaskSection("Task 16: Titles on Webpage (and logged to Console)", task16Wrap);
+
+        // --- Task 17: Display each product's title and category inside the same <div> ---
+        let task17Wrap = document.createElement('div');
+        for (let i = 0; i < products.length; i++) {
+          let div = document.createElement('div');
+          div.textContent = products[i].title + " — Category: [" + products[i].category + "]";
+          task17Wrap.appendChild(div);
+        }
+        renderTaskSection("Task 17: Title and Category inside same <div>", task17Wrap);
+      })
+      .catch(function(error) {
+        apiContainer.textContent = "Error loading API data: " + error.message;
+      })
+      // 20. Use .finally() to display "API request completed" after the request finishes
+      .finally(function() {
+        finallyContainer.textContent = "API request completed";
+      });
+  </script>
+</body>
+</html>
